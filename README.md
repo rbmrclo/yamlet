@@ -1,10 +1,15 @@
 # Yamlet
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/yamlet`. To experiment with that code, run `bin/console` for an interactive prompt.
+  Yamlet is a tiny library (< 100 lines of code) which injects CRUD
+functionalities to your Plain Old Ruby Objects and store data on a YAML file using
+[YAML::Store].
 
-TODO: Delete this and the text above, and describe your gem
+  Perfect for creating small applications **(for demo/prototyping purposes)**
+where you only need a single YAML file to store everything and removes the
+constraint of setting up a database.
 
-## Installation
+Installation
+------------
 
 Add this line to your application's Gemfile:
 
@@ -20,15 +25,93 @@ Or install it yourself as:
 
     $ gem install yamlet
 
-## Usage
+Usage
+--------
 
-TODO: Write usage instructions here
+### Configuration
 
-## Development
+First, create a YAML file somewhere then tell Yamlet where to find that file which we'll be using for storing data.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `bin/console` for an interactive prompt that will allow you to experiment.
+```ruby
+Yamlet.repository_file = "/path/to/repository.yml"
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release` to create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+**NOTE: A `RepositoryNotFound` error will be raised when Yamlet can't locate the YAML file.**
+
+### Using Yamlet with Classes
+
+```ruby
+class User
+  include Yamlet.model
+
+  #...
+end
+```
+
+After including `Yamlet.model` in your class, notice that the YAML file will
+automatically be updated.
+
+```yaml
+# /path/to/repository.yml
+
+---
+user: []
+```
+
+### Methods
+
+
+#### `.all`
+
+
+```ruby
+  User.all   #=> []
+  User.create(name: "Grumpy Kid")
+
+  User.all #=> [{"id"=>1, "name"=>"Grumpy Kid"}]
+```
+
+#### `.find`
+
+```ruby
+  User.find(1) #=> {"id"=>1, "name"=>"Grumpy Kid"}
+```
+
+#### `.create`
+
+```ruby
+  User.create(name: "Grumpy Kid")
+  #=> {"id"=>1, "name"=>"Grumpy Kid"}
+```
+
+#### `.update`
+
+```ruby
+  User.update(1, name: "Grumpy Dad")
+  #=> {"id"=>1, "name"=>"Grumpy Dad"}
+```
+
+#### `.destroy`
+
+```ruby
+  User.destroy(1)
+
+  User.all #=> []
+```
+
+#### `.destroy_all`
+
+```ruby
+  5.times { |i| User.create(name: "Grumpy #{i}") }
+
+  User.destroy_all #=> []
+```
+
+## Run the tests
+
+```terminal
+$ rspec spec
+```
 
 ## Contributing
 
@@ -37,3 +120,5 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+[YAML::Store]: http://ruby-doc.org/stdlib-2.1.0/libdoc/yaml/rdoc/YAML/Store.html
