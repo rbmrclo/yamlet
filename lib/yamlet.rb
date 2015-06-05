@@ -25,7 +25,6 @@ module Yamlet
   end
 
   module Model
-    Error = Class.new(StandardError)
 
     def self.included(klass)
       klass.define_singleton_method :resource_name, -> {

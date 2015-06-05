@@ -57,7 +57,6 @@ RSpec.describe Yamlet do
         it "returns all records" do
           5.times { Animal.create(name: "grumpy") }
 
-          binding.pry
           expect(Animal.all.count).to eq 5
         end
       end
